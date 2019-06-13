@@ -1,5 +1,6 @@
 #created by Ansh Kumar Sharma 2018130
 
+from geoloc import gp
 import glob
 import os
 import sys
@@ -12,6 +13,9 @@ from tkinter import END
 import tkinter as tk
 from collections import OrderedDict
 import pygame
+import pickle
+
+gpcrop = {}
 
 pygame.init()
 
@@ -22,7 +26,7 @@ def images():
 			im.extend(images_for(path))
 	else:
 		im.extend(images_for(os.getcwd()))
-	return im
+	return sorted(im)
 
 def images_for(path):
 	if os.path.isfile(path+"/images"):
@@ -118,6 +122,7 @@ class App():
 		if lower < upper:
 			lower, upper = upper, lower
 
+		print(input_loc)
 		im = Image.open(input_loc)
 		im = im.resize((1280,720), Image.ANTIALIAS)
 		im = im.crop(( left, upper, right, lower))
@@ -128,6 +133,10 @@ class App():
 		im = im.resize((new_width, new_height), Image.ANTIALIAS)
 		im.save("/home/anshks/interop/client/mycropped/"+str(self.index)+".jpg")
 		self.index += 1
+		try:
+			gpcrop[str(self.index-1)+".jpg"] = gp[input_loc[7:]]
+		except KeyError:
+			print("OOPs")
 
 	def fit_to_box(self,label):
 		if self.image:
@@ -226,5 +235,10 @@ def scaled_size(width, height, box_width, box_height):
 	else:
 		return box_width, int(box_width/float(width) * height)
 
-if __name__ == '__main__': 
-    app=App()
+def saveDict(dictionary):
+	with open("gpcrop.txt", "wb") as myFile:
+		pickle.dump(dictionary, myFile)
+
+if __name__ == '__main__':
+	app=App()
+	saveDict(gpcrop)
