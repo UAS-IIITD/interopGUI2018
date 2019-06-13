@@ -1,5 +1,6 @@
 #created by Ansh Kumar Sharma 2018130
 
+import pickle
 import glob
 import os
 import sys
@@ -12,6 +13,9 @@ import tkinter as tk
 from PIL import Image
 from auvsi_suas.client import client
 from auvsi_suas.proto import interop_api_pb2
+
+with open("gpcrop.txt", "rb") as myFile:
+	gpcrop = pickle.load(myFile)
 
 def images():
 	im = []
@@ -54,8 +58,8 @@ class Out():
 
 		self.labelmission=tk.Label(self.lBtmFrame,text="Mission")
 		self.label1=tk.Label(self.lBtmFrame,text="Type")
-		self.label2=tk.Label(self.lBtmFrame,text="Latitude")
-		self.label3=tk.Label(self.lBtmFrame,text="Longitude")
+		#self.label2=tk.Label(self.lBtmFrame,text="Latitude")
+		#self.label3=tk.Label(self.lBtmFrame,text="Longitude")
 		self.label4=tk.Label(self.lBtmFrame,text="Orientation")
 		self.label5=tk.Label(self.lBtmFrame,text="Shape")
 		self.label6=tk.Label(self.lBtmFrame,text="Background Colour")
@@ -72,8 +76,8 @@ class Out():
 		self.option1=tk.OptionMenu(self.lBtmFrame,self.text1,"standard","emergent","off_axis")
 		self.option1.config(width=25)
 
-		self.entry2=tk.Entry(self.lBtmFrame)
-		self.entry3=tk.Entry(self.lBtmFrame)
+		#self.entry2=tk.Entry(self.lBtmFrame)
+		#self.entry3=tk.Entry(self.lBtmFrame)
 
 		self.text4=tk.StringVar(self.lBtmFrame)
 		self.text4.set("Orientation")
@@ -113,13 +117,13 @@ class Out():
 		self.label1.config(width=25)
 		self.label1.config(font=("Courier",13))
 
-		self.label2.grid(row=2,padx=10,pady=15)
-		self.label2.config(width=25)
-		self.label2.config(font=("Courier",13))
+		#self.label2.grid(row=2,padx=10,pady=15)
+		#self.label2.config(width=25)
+		#self.label2.config(font=("Courier",13))
 
-		self.label3.grid(row=3,padx=10,pady=15)
-		self.label3.config(width=25)
-		self.label3.config(font=("Courier",13))
+		#self.label3.grid(row=3,padx=10,pady=15)
+		#self.label3.config(width=25)
+		#self.label3.config(font=("Courier",13))
 
 		self.label4.grid(row=4,padx=10,pady=15)
 		self.label4.config(width=25)
@@ -151,12 +155,12 @@ class Out():
 		self.option1.grid(row=1,column=1,padx=10,pady=15,sticky="ew")
 		self.option1.config(width=25)
 		self.option1.config(font=("Courier",13))
-		self.entry2.grid(row=2,column=1,padx=10,pady=15)
-		self.entry2.config(width=25)
-		self.entry2.config(font=("Courier",13))
-		self.entry3.grid(row=3,column=1,padx=10,pady=15)
-		self.entry3.config(width=25)
-		self.entry3.config(font=("Courier",13))
+		#self.entry2.grid(row=2,column=1,padx=10,pady=15)
+		#self.entry2.config(width=25)
+		#self.entry2.config(font=("Courier",13))
+		#self.entry3.grid(row=3,column=1,padx=10,pady=15)
+		#self.entry3.config(width=25)
+		#self.entry3.config(font=("Courier",13))
 		self.option4.grid(row=4,column=1,padx=10,pady=15)
 		self.option4.config(width=25)
 		self.option4.config(font=("Courier",13))     
@@ -261,11 +265,8 @@ class Out():
 		label.image = tkimage
 
 	def upload2Interop(self):
-		s1=s2=s3=s4=s5=s6=s7=s8=s9=None
 		s0=self.mission.get()
 		s1=self.text1.get()
-		s2=self.entry2.get()
-		s3=self.entry3.get()
 		s4=self.text4.get()
 		s5=self.text5.get()
 		s6=self.text6.get()
@@ -273,47 +274,44 @@ class Out():
 		s8=self.text8.get()
 		s9=self.entry9.get()
 
-		if s1=="":
-			s1=None
-		if s2=="":
-			s2=None
-		if s3=="":
-			s3=None
-		if s4=="":
-			s4=None
-		if s5=="":
-			s5=None
-		if s6=="":
-			s6=None
-		if s7=="":
-			s7=None
-		if s8=="":
-			s8=None
-		if s9=="":
-			s9=None
+		typeDict = {"standard":interop_api_pb2.Odlc.STANDARD,"emergent":interop_api_pb2.Odlc.EMERGENT,"off_axis":interop_api_pb2.Odlc.OFF_AXIS}
+		orientationDict = {"n":1, "ne":2, "e":3, "se":4, "s":5, "sw":6, "w":7, "nw":8}
+		shapeDict = {"circle":1, "semicircle":2 ,"quarter_circle":3 ,"triangle":4 ,"square":5 ,"rectangle":6 ,"trapezoid":7 ,"pentagon":8 ,"hexagon":9 ,"heptagon":10 ,"octagon":11 ,"star":12 ,"cross":13}
+		colourDict = {"white":1 ,"black":2 ,"gray":3 ,"red":4 ,"blue":5 ,"green":6 ,"yellow":7 ,"purple":8 ,"brown":9 ,"orange":10}
 
-		myclient = client.Client(url='http://localhost:8000',
-		        username='testuser',
-		        password='testpass')
-
-		odlc = interop_api_pb2.Odlc()  
-		odlc.mission = 1 
-		odlc.type = interop_api_pb2.Odlc.STANDARD
-		#odlc.latitude = s2
-		#odlc.longitude = s3
-		odlc.orientation = 4   
-		odlc.shape = 5
-		odlc.shape_color = 6
-		odlc.alphanumeric = s7
-		odlc.alphanumeric_color = 8
-
-		odlc = myclient.post_odlc(odlc)
+		myclient = client.Client(url='http://10.10.130.10:80',
+		        username='indraprastha',
+		        password='8420610022')
 
 		currPath = self._images[self._image_pos]
+
+		odlc = interop_api_pb2.Odlc()  
+		odlc.mission = int(s0)
+		odlc.type = typeDict[s1]
+		try:
+			odlc.latitude = float(gpcrop[currPath[10:]][0])
+			odlc.longitude = float(gpcrop[currPath[10:]][1])
+		except KeyError:
+			print("OOPs")
+		if s4 != "Orientation":
+			odlc.orientation = orientationDict[s4]
+		if s5 != "Shape":
+			odlc.shape = shapeDict[s5]
+		if s6 != "Background Colour":
+			odlc.shape_color = colourDict[s6]
+		if s7 != "":
+			odlc.alphanumeric = s7
+		if s8 != "Alphanumeric Colour":
+			odlc.alphanumeric_color = colourDict[s8]
+		if s9 != "" and odlc.type == interop_api_pb2.Odlc.EMERGENT:
+			odlc.description = s9
+
+		odlc = myclient.post_odlc(odlc)
 
 		with open(currPath, 'rb') as f:
 			image_data = f.read()
 			myclient.put_odlc_image(odlc.id, image_data)
+
 
 	@property
 	def box_width(self):
